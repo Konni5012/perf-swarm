@@ -55,6 +55,21 @@ export class ExperimentStore {
     return record;
   }
 
+  async run(id: string, actor: string, command: string[], env: Record<string, string> = {}, timeoutMs = 300_000): Promise<{ code: number; stdout: string; stderr: string; durationMs: number }> {
+    if (!command.length || !command[0]!.trim()) throw new Error("Experiment command must contain an executable.");
+    const record = await this.record(id);
+    if (record.status !== "running") throw new Error(`Experiment ${id} is already ${record.status}.`);
+    const started = Date.now(); await this.event(id, "command-start", { actor, command, timeoutMs });
+    try {
+      const result = await execute(command[0]!, command.slice(1), { cwd: record.workspace, env: { ...process.env, ...env }, timeout: timeoutMs, maxBuffer: 32 * 1024 * 1024 });
+      const output = { code: 0, stdout: result.stdout, stderr: result.stderr, durationMs: Date.now() - started };
+      await this.event(id, "command-end", { actor, command, ...output }); return output;
+    } catch (error: any) {
+      const output = { code: typeof error?.code === "number" ? error.code : 1, stdout: String(error?.stdout ?? ""), stderr: String(error?.stderr ?? error), durationMs: Date.now() - started };
+      await this.event(id, "command-end", { actor, command, ...output }); return output;
+    }
+  }
+
   async list(filter?: { status?: ExperimentStatus; actor?: string; query?: string }): Promise<ExperimentRecord[]> {
     let entries: string[] = []; try { entries = (await readdir(this.root, { withFileTypes: true })).filter(e => e.isDirectory()).map(e => e.name); } catch { return []; }
     const records = await Promise.all(entries.map(id => this.record(id).catch(() => undefined)));

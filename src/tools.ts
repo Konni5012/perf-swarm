@@ -129,16 +129,17 @@ export function workerTools(engine: Engine, actor: string): ToolDefinition[] {
     defineTool({
       name: "experiment", label: "Experiment ledger", description: "Record every engineering attempt as durable evidence. Create hypotheses, checkpoint observations, finish attempts as succeeded/failed/blocked/inconclusive, and search prior attempts before repeating work. Finished attempts are immutable; create a new linked attempt for retries or variations.",
       parameters: Type.Object({
-        action: Type.Union(["create", "checkpoint", "finish", "list", "get"].map(value => Type.Literal(value))),
+        action: Type.Union(["create", "checkpoint", "run", "finish", "list", "get"].map(value => Type.Literal(value))),
         id: optionalString, hypothesis: optionalString, parent: optionalString, note: optionalString, result: optionalString, failureCategory: optionalString,
         status: Type.Optional(Type.Union(["succeeded", "failed", "blocked", "inconclusive", "superseded"].map(value => Type.Literal(value)))),
-        query: optionalString, tags: Type.Optional(Type.Array(Type.String())), metrics: Type.Optional(Type.Record(Type.String(), Type.Union([Type.String(), Type.Number(), Type.Boolean()])))
+        query: optionalString, command: Type.Optional(Type.Array(Type.String({ minLength: 1 }))), timeoutMs: Type.Optional(Type.Integer({ minimum: 1000, maximum: 3600000 })), env: Type.Optional(Type.Record(Type.String(), Type.String())), tags: Type.Optional(Type.Array(Type.String())), metrics: Type.Optional(Type.Record(Type.String(), Type.Union([Type.String(), Type.Number(), Type.Boolean()])))
       }),
       execute: async (_id, args) => {
         if (args.action === "create") return result(await experiments.create({ actor, objective: store.state.objective, hypothesis: args.hypothesis ?? "", workspace: store.worker(actor).workspace, parent: args.parent, tags: args.tags }));
         if (args.action === "list") return result(await experiments.list({ query: args.query, actor }));
         if (args.action === "get") return result(await experiments.get(args.id ?? ""));
         if (args.action === "checkpoint") { await experiments.checkpoint(args.id ?? "", actor, args.note ?? "", args.metrics); return result(await experiments.get(args.id ?? "")); }
+        if (args.action === "run") return result(await experiments.run(args.id ?? "", actor, args.command ?? [], args.env, args.timeoutMs));
         return result(await experiments.finish(args.id ?? "", actor, { status: args.status ?? "inconclusive", result: args.result ?? "", failureCategory: args.failureCategory, metrics: args.metrics, tags: args.tags }));
       },
     }),

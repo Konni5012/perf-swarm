@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simple Swarm System</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header class="masthead">
+  <a class="brand" href="#swarms" data-action="view" data-view="swarms"><span class="brand-mark">✣</span> SIMPLE SWARM SYSTEM</a>
+  <nav class="top-nav" aria-label="Swarm sections"><button data-action="view" data-view="swarms" class="active">SWARMS</button><span>/</span><button data-action="view" data-view="threads">THREADS</button><span>/</span><button data-action="view" data-view="agents">AGENTS</button></nav>
+  <div class="breadcrumb"><button data-action="view" data-view="swarms">swarms</button><span>/</span><span id="run-id">connecting</span><span id="view-label"></span></div>
+  <input id="signal-search" type="search" placeholder="find a signal… ( / )" aria-label="Find a swarm or thread">
+  <div id="metrics" class="summary" aria-label="Swarm metrics"></div>
+</header>
+<main id="overview">
+  <div id="error" class="error" role="alert" hidden></div>
+  <section id="empty" class="empty" hidden><h2>No swarms here yet</h2><p>Start a swarm, or point <code>swarm gui --state-dir</code> at your saved runs.</p></section>
+  <section id="swarms-view" class="view"><div class="list-caption"><span id="run-count">0</span> swarms <span id="live-count"></span><span class="list-spacer"></span><span id="updated">Connecting…</span><button id="refresh" class="text-button">refresh ↻</button></div><div id="run-list" class="run-list"></div></section>
+  <div id="content" hidden>
+    <section id="threads-view" class="view" hidden>
+      <div class="list-controls"><span>ORDER</span><button class="selected" data-action="thread-order" data-order="activity">ACTIVITY</button><button data-action="thread-order" data-order="volume">VOLUME</button><span class="control-gap">SHOW</span><button class="selected" data-action="thread-filter" data-filter="all">ALL</button><button data-action="thread-filter" data-filter="board">PUBLIC</button><button data-action="thread-filter" data-filter="dm">DIRECT</button></div>
+      <div id="thread-list"></div>
+    </section>
+    <section id="agents-view" class="view" hidden>
+      <div class="panel-head"><h2>Agents <span id="agent-count" class="count"></span></h2><input id="agent-search" type="search" placeholder="find an agent…" aria-label="Find an agent"></div>
+      <div class="table-wrap"><table><thead><tr><th>Agent</th><th>Model</th><th>Status</th><th>Tokens</th><th>Turns</th><th>Work</th><th></th></tr></thead><tbody id="agent-rows"></tbody></table></div>
+      <details class="objective"><summary>ORIGINAL OBJECTIVE <span id="objective-preview"></span></summary><p id="objective-full"></p></details>
+      <section class="graph-panel"><div class="panel-head"><div><h2>Activity flame graph</h2><p id="graph-hint"></p></div><div class="segmented"><button data-action="graph-mode" data-mode="time" class="selected">Wall time</button><button data-action="graph-mode" data-mode="tokens">Tokens</button></div></div><div id="graph" class="graph"></div><div id="graph-range" class="graph-footer"></div></section>
+      <section id="outcome" class="outcome-panel"><div class="panel-head"><h2>Run outcome</h2><span id="outcome-phase" class="status"></span></div><div id="outcome-content"></div></section>
+    </section>
+  </div>
+</main>
+<footer class="trace-footer"><button data-action="view" data-view="agents" class="trace-link">raw trace →</button><div class="trace-info"><span id="trace-start"></span><span id="trace-count"></span><span id="trace-end"></span></div><div id="trace" class="trace"></div></footer>
+<div id="thread-scrim" class="scrim" hidden></div>
+<section id="thread-dialog" class="thread-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="thread-title" tabindex="-1">
+  <button id="close-thread" class="dialog-close" aria-label="Close thread">✕</button><h1 id="thread-title">PRIMARY THREAD</h1><div id="thread-meta" class="thread-meta"></div><div id="thread-budget" class="thread-budget"></div><div id="thread-members" class="thread-members"></div>
+  <div class="thread-toolbar"><span>THREAD <span id="board-count" hidden></span><span id="dm-count" hidden></span></span><input id="board-search" type="search" placeholder="find a message…" aria-label="Search thread messages"><button data-action="show-messages">SHOW ALL</button><button data-action="message-mode" data-mode="preview" class="selected">PREVIEW</button><button data-action="message-mode" data-mode="raw">RAW</button></div>
+  <div id="board" class="message-list"></div><div id="dms" class="message-list" hidden></div><div id="dm-filter" hidden></div><button id="dm-reset" hidden>All DMs</button>
+</section>
+<div id="scrim" class="scrim" hidden></div><aside id="inspector" class="inspector" hidden role="dialog" aria-modal="true" aria-label="Agent inspector" tabindex="-1"><div class="inspector-top"><span class="eyebrow">AGENT INSPECTOR</span><button id="close-inspector" aria-label="Close agent inspector">✕</button></div><div id="inspector-content"></div></aside>
+<script src="/app.js" defer></script>
+</body></html>

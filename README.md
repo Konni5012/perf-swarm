@@ -190,6 +190,7 @@ For local ResNet development on an Apple Silicon Mac, provision the shared worke
 brew install python@3.12
 npm run env:mps:setup
 export PATH="$PWD/.perf-swarm/python/bin:$PATH"
+source scripts/activate-mps-env.sh
 perf-swarm start "Optimize the ResNet model to the local MPS target" \
   --workspace /path/to/resnet-repository --workers 6 \
   --model gpt-6-luna --subagent-model gpt-6-luna --thinking xhigh

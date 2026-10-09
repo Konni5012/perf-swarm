@@ -182,20 +182,4 @@ perf-swarm experiments RUN_ID --status failed --json
 perf-swarm experiments RUN_ID --query "memory"
 ```
 
-### Apple Silicon MPS environment
-
-For local ResNet development on an Apple Silicon Mac, provision the shared worker environment once from the target Git repository:
-
-```sh
-brew install python@3.12
-npm run env:mps:setup
-export PATH="$PWD/.perf-swarm/python/bin:$PATH"
-source scripts/activate-mps-env.sh
-perf-swarm start "Optimize the ResNet model to the local MPS target" \
-  --workspace /path/to/resnet-repository --workers 6 \
-  --model gpt-6-luna --subagent-model gpt-6-luna --thinking xhigh
-```
-
-`requirements-mps.txt` installs PyTorch, torchvision, and process metrics. `scripts/check-mps-env.py` verifies an arm64 host, a PyTorch build with MPS support, and an available MPS device. MPS is a local-development backend; its reported MFU is a proxy based on the device peak supplied by the benchmark and is not interchangeable with NVIDIA CUDA MFU.
-
 This makes negative results searchable and replayable evidence. Workers should search prior attempts before repeating a strategy, record why an approach failed, and link meaningful variations to their parent attempt.

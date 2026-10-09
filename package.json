@@ -18,9 +18,7 @@
     "dev": "node --import tsx src/cli.ts",
     "test": "node --import tsx --test test/*.test.ts",
     "check": "tsc -p tsconfig.json --noEmit",
-    "browser:chrome:build": "node src/virtual-chrome/build.mjs",
-    "env:mps:setup": "bash scripts/setup-mps-env.sh",
-    "env:mps:check": "python3 scripts/check-mps-env.py"
+    "browser:chrome:build": "node src/virtual-chrome/build.mjs"
   },
   "dependencies": {
     "commander": "^14.0.0",

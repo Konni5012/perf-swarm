@@ -189,10 +189,13 @@ export class Store extends EventEmitter {
   electIntegrator(actor: string): void {
     this.worker(actor);
     this.update((state) => {
-      if (state.integrator && state.integrator !== actor) throw new Error(`${state.integrator} already owns integration; coordinate with them by DM.`);
+      if (state.integrator && state.integrator !== actor) {
+        const current = state.workers.find(worker => worker.id === state.integrator);
+        if (current && current.status !== "failed" && !current.stallSince) throw new Error(`${state.integrator} already owns integration; coordinate with them by DM.`);
+      }
       state.integrator = actor;
     });
-    this.event("integrator", "Claimed integration", actor);
+    this.event("integrator", "Manager owns integration", actor);
   }
   tapOut(actor: string, outcome: "complete" | "blocked" | "partial", reason: string): void {
     actor = this.worker(actor).id;

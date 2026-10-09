@@ -70,14 +70,11 @@ export function workerTools(engine: Engine, actor: string): ToolDefinition[] {
       },
     }),
     defineTool({
-      name: "integrator", label: "Integration ownership", description: "Volunteer to combine outputs by claiming integration ownership. Coordinate by board/DM before taking it. Release ownership when handing off.",
+      name: "integrator", label: "Manager and integration ownership", description: "The first worker is automatically the manager and integrator. A healthy manager remains owner; claim only to take over after the manager stalls or fails. Ownership cannot be released to leave a run managerless.",
       parameters: Type.Object({ action: Type.Union([Type.Literal("claim"), Type.Literal("release"), Type.Literal("status")]) }),
       execute: async (_id, args) => {
         if (args.action === "claim") store.electIntegrator(actor);
-        if (args.action === "release") store.update((state) => {
-          if (state.integrator !== actor) throw new Error("Only the integrator can release ownership.");
-          state.integrator = undefined;
-        });
+        if (args.action === "release") throw new Error("A run must always have a manager; transfer ownership by claiming after the current manager fails or stalls.");
         return result({ owner: store.state.integrator, workspace: store.state.integration });
       },
     }),

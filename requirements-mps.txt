@@ -1,0 +1,4 @@
+# Apple Silicon local-development environment for perf-SWARM ResNet work.
+torch>=2.6
+torchvision>=0.21
+psutil>=6

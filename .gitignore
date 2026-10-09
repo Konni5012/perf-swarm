@@ -1,4 +1,5 @@
 node_modules/
 dist/
 .perf-swarm/
+!.perf-swarm/.keep
 *.tsbuildinfo
